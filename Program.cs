@@ -17,6 +17,8 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
         builder.Configuration["ToDoDB"],
         ServerVersion.AutoDetect(builder.Configuration["ToDoDB"])
     ));
+    Console.WriteLine("TO DO DB:");
+Console.WriteLine(builder.Configuration["ToDoDB"]);
 var app = builder.Build();
 app.UseCors("AllowAll");
 app.UseSwagger();
