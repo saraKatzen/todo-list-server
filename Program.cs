@@ -1,4 +1,5 @@
 
+using Microsoft.EntityFrameworkCore;
 using TodoApi;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
@@ -10,8 +11,12 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<ToDoDbContext>();
-
+// builder.Services.AddDbContext<ToDoDbContext>();
+builder.Services.AddDbContext<ToDoDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration["ToDoDB"],
+        ServerVersion.AutoDetect(builder.Configuration["ToDoDB"])
+    ));
 var app = builder.Build();
 app.UseCors("AllowAll");
 app.UseSwagger();
@@ -29,46 +34,46 @@ app.MapPost("/items", (ToDoDbContext context, Item item) =>
 });
 app.MapPut("/items/{id}", (int id, Item item, ToDoDbContext context) =>
 {
-    // 1. îååãàéí ùîé ùùìç àú äá÷ùä ìà äúáìáì áéï äëúåáú ìúåëï
+    // 1. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
     if (id != item.Id)
     {
         return Results.BadRequest();
     }
 
-    // 2. äáãé÷ä äçëîä ùìê: äàí äîùéîä áëìì ÷ééîú áîñã äðúåðéí?
+    // 2. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
     var existingItem = context.Items.Find(id);
     if (existingItem is null)
     {
-        return Results.NotFound(); // îçæéø ùâéàú 404 àí àéï îùéîä ëæå
+        return Results.NotFound(); // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ 404 ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     }
 
-    // 3. àí îöàðå àåúä - îòãëðéí àú äðúåðéí ùìä
-    // ùéîé ìá: àðé îðéç ùéù ìîùéîä ùãåú ëîå Name å-IsComplete. 
-    // àí ÷øàú ìäí àçøú, úùðé àú äùîåú áäúàí.
+    // 3. ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½: ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Name ï¿½-IsComplete. 
+    // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
     existingItem.Name = item.Name;
     existingItem.IsComplete = item.IsComplete;
 
-    // 4. ùåîøéí àú äùéðåééí
+    // 4. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     context.SaveChanges();
 
     return Results.NoContent();
 });
 app.MapDelete("/items/{id}", (int id, ToDoDbContext context) =>
 {
-    // 1. îçôùéí àú äîùéîä áîñã äðúåðéí ìôé äîñôø ùìä
+    // 1. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     var item = context.Items.Find(id);
 
-    // 2. áåã÷éí àí äéà áëìì ÷ééîú
+    // 2. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
     if (item is null)
     {
-        return Results.NotFound(); // îçæéø ùâéàú 404: "ìà ðîöà"
+        return Results.NotFound(); // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ 404: "ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½"
     }
 
-    // 3. àí äéà ÷ééîú - îåç÷éí åùåîøéí
+    // 3. ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     context.Items.Remove(item);
     context.SaveChanges();
 
-    return Results.NoContent(); // îçæéø ùäëì òáø áäöìçä åàéï îä ìäåñéó
+    return Results.NoContent(); // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 });
 app.MapGet("/", () => "Hello World!");
 
