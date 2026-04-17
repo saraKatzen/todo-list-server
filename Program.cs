@@ -30,7 +30,8 @@ var app = builder.Build();
 app.UseCors("AllowAll");
 app.UseSwagger();
 app.UseSwaggerUI();
-
+Console.WriteLine("ENV VAR:");
+Console.WriteLine(builder.Configuration.GetConnectionString("ToDoDB"));
 app.MapGet("/items", (ToDoDbContext context) =>
 {
     return context.Items.ToList();
