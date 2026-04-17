@@ -12,10 +12,17 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // builder.Services.AddDbContext<ToDoDbContext>();
+// builder.Services.AddDbContext<ToDoDbContext>(options =>
+//     options.UseMySql(
+//         builder.Configuration["ToDoDB"],
+//         ServerVersion.AutoDetect(builder.Configuration["ToDoDB"])
+//     ));
+var connectionString = builder.Configuration.GetConnectionString("ToDoDB");
+
 builder.Services.AddDbContext<ToDoDbContext>(options =>
     options.UseMySql(
-        builder.Configuration["ToDoDB"],
-        ServerVersion.AutoDetect(builder.Configuration["ToDoDB"])
+        connectionString,
+        ServerVersion.AutoDetect(connectionString)
     ));
     Console.WriteLine("TO DO DB:");
 Console.WriteLine(builder.Configuration["ToDoDB"]);
