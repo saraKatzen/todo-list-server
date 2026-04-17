@@ -17,14 +17,14 @@ builder.Services.AddSwaggerGen();
 //         builder.Configuration["ToDoDB"],
 //         ServerVersion.AutoDetect(builder.Configuration["ToDoDB"])
 //     ));
-var connectionString = builder.Configuration.GetConnectionString("ToDoDB");
+var connectionString = builder.Configuration["ToDoDB"];
 
 builder.Services.AddDbContext<ToDoDbContext>(options =>
     options.UseMySql(
         connectionString,
         ServerVersion.AutoDetect(connectionString)
     ));
-    Console.WriteLine("TO DO DB:");
+        Console.WriteLine("TO DO DB:");
 Console.WriteLine(builder.Configuration["ToDoDB"]);
 var app = builder.Build();
 app.UseCors("AllowAll");
